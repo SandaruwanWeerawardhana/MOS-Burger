@@ -1,27 +1,21 @@
 
 /* ===============================Index======================================= */
 .Home_Bg{
-    background-color: rgb(6, 6, 42);
-    background-image: url(asset/Index_bg.jpg);
-    background-position: center;
+    background-color: rgb(11, 6, 42);
+    background-image: url(/UI/Asset/Index_bg.jpg);
+    /* background-position: center; */
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
     margin: 0px;
-    width: 110%;
-    height: 600px;  
+    /* width: 110%; */
+    /* height: 600px;   */
     
-}
-.NaviBar{
-    font-weight: bold;
-    align-items: center;
-    background-color: rgb(114, 95, 20);
-    text-indent: 20px;
 }
 
 /* ===========================Add Customer================================================= */
 
 .Customer_bg{
-    background-image: url(UI\Asset\body_bg.jpg);
+    background-image: url(/UI/Asset/customer.jpg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -84,7 +78,7 @@ ul {
     list-style-type: none;
     padding: 0;
     overflow: hidden;
-    background-color: #333;
+    background-color: #330808;
   }
   
   li {
@@ -100,7 +94,8 @@ ul {
   }
   
   li a:hover {
-    background-color: #111;
+    background-color: #e70d0d;
+    border-radius: 10px;
   }
 
 /* ================================= Place Oder =========================================== */
@@ -109,11 +104,6 @@ ul {
     background-image: url(UI\Asset\customer.jpg);
     background-color: #091062;
 }
-
-
-
-
-
 
 
 

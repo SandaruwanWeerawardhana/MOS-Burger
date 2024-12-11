@@ -60,7 +60,7 @@ const Burger = [
     { itemCode: "B1046", itemName: "Sprite", price: 1500.00, discount: 3 ,img:"https://i.pinimg.com/736x/da/29/54/da29549b7fd367669b7d8502d9d0028c.jpg"},
     { itemCode: "B1047", itemName: "Mirinda", price: 850.00, discount: 7 ,img:"https://i.pinimg.com/736x/99/0b/46/990b466538fbdc1f4b6722a6a393e908.jpg"}
   ];
-{/* <button type="button" class="btn btn-success px-3">Add to Cart</button> */}
+/* <button type="button" class="btn btn-success px-3">Add to Cart</button> */
   const burger = document.getElementById("Burger");
   const submarines = document.getElementById("Submarines");
   const fries = document.getElementById("Fries");
@@ -69,17 +69,19 @@ const Burger = [
   const beverages = document.getElementById("Beverages");
 
 
-  Beverages.forEach(e =>{
-    beverages.innerHTML += `
-      <div class="card">
-      <img src="${e.img}" class="rounded-2 fs-3" alt="Card Image">
-      (${e.itemCode})
-      <h3 class="card-title text-center fw-bold">${e.itemName}</h3>
-      <h5>Rs.${e.price}/=</h5>
-      
-    </div>
-    `;
-  });
+  if (burger) {
+    Burger.forEach(e => {
+      burger.innerHTML += `
+        <div class="card">
+        <img src="${e.img}" class="rounded-2 fs-3" alt="Card Image">
+        (${e.itemCode})
+        <h3 class="card-title text-center fw-bold">${e.itemName}</h3>
+        <h5>Rs.${e.price}/=</h5>
+        </div>
+      `;
+    });
+  }
+  
 
   Chicken.forEach(e =>{
     chicken.innerHTML += `
@@ -140,3 +142,160 @@ const Burger = [
     </div>
     `;
   });
+
+  // ========================================================================
+
+let Items = [];
+
+let PointIndex = -1;
+
+function loadItemsFromJSON() {
+    fetch('items.json')
+        .then(response => response.json())
+        .then(data => {
+            if (!localStorage.getItem('items')) {
+                Items = data;
+                refreshTable();
+                saveItemsToLocalStorage();
+            }
+        })
+        .catch(error => console.error('Error loading items:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadItemsFromLocalStorage();  
+    if (!Items.length) {
+        loadItemsFromJSON(); 
+    }
+});
+
+document.getElementById('itemForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const itemno = document.getElementById('itemno').value.trim();
+    const itemtype = document.getElementById('itemtype').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const price = document.getElementById('price').value.trim();
+    const image = document.getElementById('image').files[0];
+
+    if (itemno === '' || itemtype === '' || name === '' || price === '' || !image) {
+        alert('Please fill in all fields and select an image');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(image);
+    reader.onload = function() {
+        const imageUrl = reader.result;
+        
+        if (PointIndex === -1) {
+            addItem({ itemno, itemtype, name, price, imageUrl });
+        } else {
+            updateItem(PointIndex, { itemno, itemtype, name, price, imageUrl });
+            document.querySelector('#itemForm button').innerText = 'Add Item';
+            PointIndex = -1;
+        }
+
+        document.getElementById('itemForm').reset();
+    };
+});
+
+function addItem(item) {
+    Items.push(item);
+    addItemToTable(item, Items.length - 1);
+    saveItemsToLocalStorage();
+    console.log('Menu page updated');
+}
+
+function updateItem(index, updatedItem) {
+    Items[index] = updatedItem;
+    updateItemInTable(index, updatedItem);
+    saveItemsToLocalStorage();
+    console.log('Menu page updated');
+}
+
+function addItemToTable(item, index) {
+    const tableBody = document.querySelector('#itemTable tbody');
+    const row = document.createElement('tr');
+
+    row.innerHTML = `
+        <td>${item.itemno}</td>
+        <td>${item.itemtype}</td>
+        <td>${item.name}</td>
+        <td>${item.price}</td>
+        <td><img src="${item.imageUrl}" alt="${item.name}" class="item-image"></td>
+        <td>
+            <button class="btn btn-sm btn-outline-primary" onclick="editItem(${index})">✏️</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteItem(${index})">🗑️</button>
+        </td>
+    `;
+
+    tableBody.appendChild(row);
+}
+
+function updateItemInTable(index, updatedItem) {
+    const tableBody = document.querySelector('#itemTable tbody');
+    const row = tableBody.children[index];
+
+    row.innerHTML = `
+        <td>${updatedItem.itemno}</td>
+        <td>${updatedItem.itemtype}</td>
+        <td>${updatedItem.name}</td>
+        <td>${updatedItem.price}</td>
+        <td><img src="${updatedItem.imageUrl}" alt="${updatedItem.name}" class="item-image"></td>
+        <td>
+            <button class="btn btn-sm btn-outline-primary" onclick="editItem(${index})">✏️</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteItem(${index})">🗑️</button>
+        </td>
+    `;
+}
+
+function editItem(index) {
+    const item = Items[index];
+    document.getElementById('itemno').value = item.itemno;
+    document.getElementById('itemtype').value = item.itemtype;
+    document.getElementById('name').value = item.name;
+    document.getElementById('price').value = item.price;
+
+    document.querySelector('#itemForm button').innerText = 'Update Item';
+    PointIndex = index;
+}
+
+function deleteItem(index) {
+    Items.splice(index, 1);
+    refreshTable();
+    saveItemsToLocalStorage();
+    console.log('Menu page updated');
+}
+
+function refreshTable() {
+    const tableBody = document.querySelector('#itemTable tbody');
+    tableBody.innerHTML = '';
+    Items.forEach((item, index) => addItemToTable(item, index));
+}
+
+function saveItemsToLocalStorage() {
+    localStorage.setItem('items', JSON.stringify(Items));
+}
+
+function loadItemsFromLocalStorage() {
+    const storedItems = localStorage.getItem('items');
+    if (storedItems) {
+        Items = JSON.parse(storedItems);
+        refreshTable();
+    }
+}
+
+function searchItem() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const tableRows = document.querySelectorAll('#itemTable tbody tr');
+
+    tableRows.forEach((row, index) => {
+        const name = row.cells[2].innerText.toLowerCase();
+        if (name.includes(searchInput)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
