@@ -97,14 +97,27 @@ ul {
     background-color: #e70d0d;
     border-radius: 10px;
   }
-
+ 
+.overFlowItem{
+  max-height: 400px;
+  overflow-y: auto;
+}
+.item-image{
+  width: 70px;
+  height: 50px;
+  border-radius:200px;
+}
 /* ================================= Place Oder =========================================== */
 
-.PlaceOderBody{
-    background-image: url(UI\Asset\customer.jpg);
-    background-color: #091062;
-}
+.cartBox{
+  align-content: center;
+  /* background-color: #007bff; */
+  /* width: 600px;
+  height: 250px; */
+  max-height: 150px;
+  overflow-y: auto;
 
+}
 
 
 
